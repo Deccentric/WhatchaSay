@@ -1,0 +1,12 @@
+{
+  "Author": "Factor9915",
+  "Name": "WhatchaSay",
+  "Punchline": "An auto translator for chat.",
+  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
+  "InternalName": "whatchaSay",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "chat",
+    "translate"
+  ]
+}

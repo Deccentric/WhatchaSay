@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Numerics;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
-namespace SamplePlugin.Windows;
+namespace WhatchaSay.Windows;
 
 public class MainWindow : Window, IDisposable
 {
@@ -31,7 +31,7 @@ public class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.Text($"The random config bool is {this.Plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
+        ImGui.Text($"The random config bool is {this.Plugin.Configuration.Language}");
 
         if (ImGui.Button("Show Settings"))
         {
