@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Text;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
@@ -28,7 +29,7 @@ public class ConfigWindow : Window, IDisposable
         var enabledValue = this.Configuration.Enabled;
         var languageValue = this.Configuration.Language;
         var serviceValue = this.Configuration.Service;
-        var apiValue = this.Configuration.Api_Key;
+        byte[] apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
 
         if (ImGui.Checkbox("Enabled", ref enabledValue))
         {
@@ -84,6 +85,13 @@ public class ConfigWindow : Window, IDisposable
         {
             this.Configuration.Service = 1;
             // can save immediately on change, if you don't want to provide a "Save and Close" button
+            this.Configuration.Save();
+        }
+
+        if (ImGui.InputText("DeepL API Key", apiValue, 40))
+        {
+            this.Configuration.Api_Key = Encoding.UTF8.GetString(apiValue);
+
             this.Configuration.Save();
         }
 

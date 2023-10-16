@@ -16,6 +16,8 @@ using Lumina.Excel.GeneratedSheets;
 using WhatchaSay.Model;
 using XivCommon.Functions;
 using DeepL;
+using GSF;
+using FFXIVClientStructs.Havok;
 
 namespace WhatchaSay
 {
