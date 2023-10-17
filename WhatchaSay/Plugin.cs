@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using Lumina.Excel.GeneratedSheets;
 using XivCommon;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Dalamud.Logging;
+using System.Reflection;
 
 namespace WhatchaSay
 {
@@ -23,6 +26,7 @@ namespace WhatchaSay
     {
         public string Name => "WhatchaSay";
         private const string CommandName = "/WhatchaSay";
+        private const string TranslateCommand = "/Translate";
 
         public Translator ChatTranslate;
 
@@ -37,12 +41,8 @@ namespace WhatchaSay
         [PluginService] public static IClientState State { get; private set; }
 
         private ConfigWindow ConfigWindow { get; init; }
-        private MainWindow MainWindow { get; init; }
 
-        /// <summary>
-        /// Chat types that are set when used the "all" setting.
-        /// </summary>
-        private static readonly XivChatType[] DefaultChatTypes = new[]
+        private static readonly XivChatType[] AllowedChatTypes = new[]
         {
             XivChatType.Say,
             XivChatType.Shout,
@@ -63,7 +63,6 @@ namespace WhatchaSay
             XivChatType.Ls8,
             XivChatType.NoviceNetwork,
             XivChatType.CustomEmote,
-            XivChatType.StandardEmote,
             XivChatType.CrossLinkShell1,
             XivChatType.CrossLinkShell2,
             XivChatType.CrossLinkShell3,
@@ -71,8 +70,7 @@ namespace WhatchaSay
             XivChatType.CrossLinkShell5,
             XivChatType.CrossLinkShell6,
             XivChatType.CrossLinkShell7,
-            XivChatType.CrossLinkShell8,
-            XivChatType.Echo
+            XivChatType.CrossLinkShell8
         };
 
         public Plugin(
@@ -86,16 +84,9 @@ namespace WhatchaSay
             this.Configuration.Initialize(this.PluginInterface);
 
             this.ChatTranslate = new Translator(this);
-
-            // you might normally want to embed resources and load them from the manifest stream
-            var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
-            var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
-
             ConfigWindow = new ConfigWindow(this);
-            MainWindow = new MainWindow(this, goatImage);
             
             WindowSystem.AddWindow(ConfigWindow);
-            WindowSystem.AddWindow(MainWindow);
 
             Task.Run(async () =>
             {
@@ -103,9 +94,15 @@ namespace WhatchaSay
                 await this.ChatTranslate.Start();
             });
 
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+
+            this.CommandManager.AddHandler(CommandName.ToLower(), new CommandInfo(OnCommand)
             {
-                HelpMessage = "A useful message to display in /xlhelp"
+                HelpMessage = "Open the Configuration Window."
+            });
+
+            this.CommandManager.AddHandler(TranslateCommand.ToLower(), new CommandInfo(OnTranslateCommand)
+            {
+                HelpMessage = "/translate Open the translate window."
             });
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;
@@ -118,7 +115,9 @@ namespace WhatchaSay
 
             if (ishandled) return;
 
-            if (!DefaultChatTypes.Contains(type)) return;
+            if (!AllowedChatTypes.Contains(type)) return;
+
+            if (!this.Configuration.ChatTypeEnabled[type]) return;
 
             this.ChatTranslate.MessageQueue.Enqueue(new ChatTranslateItem
             {
@@ -134,17 +133,22 @@ namespace WhatchaSay
             this.WindowSystem.RemoveAllWindows();
 
             ConfigWindow.Dispose();
-            MainWindow.Dispose();
 
             this.ChatTranslate.Dispose();
             
-            this.CommandManager.RemoveHandler(CommandName);
+            this.CommandManager.RemoveHandler(CommandName.ToLower());
+            this.CommandManager.RemoveHandler(TranslateCommand.ToLower());
         }
 
         private void OnCommand(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            MainWindow.IsOpen = true;
+            ConfigWindow.IsOpen = true;
+        }
+
+        private void OnTranslateCommand(string command, string args)
+        {
+            
         }
 
         private void DrawUI()

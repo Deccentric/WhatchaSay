@@ -58,76 +58,122 @@ namespace WhatchaSay
             this.configuration = plugin.Configuration;
         }
 
-        public async Task Translate(string message, string senderName, string senderWorld, XivChatType chatType)
+        public async Task Translate(string message, string senderName)
         {
+            PluginLog.Information($"Attempting to send {message} from {senderName}");
             if (configuration.Service == 0)
             {
-                await LibreTranslate(message, senderName, senderWorld, chatType);
+                await LibreTranslate(message, senderName);
             } else if (configuration.Service == 1)
             {
-                await DeepLTranslate(message, senderName, senderWorld, chatType);
+                await DeepLTranslate(message, senderName);
             }
         }
 
-        private async Task DeepLTranslate(string message, string senderName, string senderWorld, XivChatType chatType)
+        private async Task DeepLTranslate(string message, string senderName)
         {
+            LibreTranslateResponse responseJSON;
+
+            // Grab Translation from selected LibreTranslate to determine Source
+            try
+            {
+                responseJSON = await MakeLibreTranslateRequest(message);
+            } catch (Exception ex)
+            {
+                PluginLog.Error(ex, "There was an error getting a response from LibreTranslate. Trying one more time.");
+                try
+                {
+                    responseJSON = await MakeLibreTranslateRequest(message, senderName);
+                } catch (Exception nested_ex)
+                {
+                    PluginLog.Error(nested_ex, "LibreTranslated failed to return a response, aborting operation.");
+                    return;
+                }
+            }
+
+            if (responseJSON == null || responseJSON.detectedLanguage.language == lang_identifier[configuration.Language])
+                return;
+            
+
+            // DeepL Object
+            try
+            {
+                var DeepLTranslator = new DeepL.Translator(configuration.Api_Key);
+
+                string language_identity = lang_identifier[configuration.Language].ToUpper();
+
+                if (language_identity == "EN")
+                    language_identity = "EN-US";
+
+                var translatedText = await DeepLTranslator.TranslateTextAsync(
+                 message,
+                 null,
+                 language_identity);
+
+                lastSentMessage = $"{senderName}: DeepL({translatedText})";
+                Plugin.Chat.Print(new XivChatEntry { Message = lastSentMessage, Type = XivChatType.SystemMessage });
+                PluginLog.Information($"{senderName}: DeepL({translatedText})");
+                Client.DefaultRequestHeaders.Authorization = null;
+            } catch
+            {
+                PluginLog.Error("There was an error receiving requested data from DeepL.");
+            }
+            
+        }
+
+        private async Task LibreTranslate(string message, string senderName)
+        {
+            LibreTranslateResponse responseJSON;
+
+            try
+            {
+                responseJSON = await MakeLibreTranslateRequest(message);
+                
+            } catch(Exception ex)
+            {
+                PluginLog.Error("There was an error getting a response from LibreTranslate. Trying one more time.");
+                try
+                {
+                    responseJSON = await MakeLibreTranslateRequest(message);
+                }
+                catch (Exception nested_ex)
+                {
+                    PluginLog.Error(nested_ex, "LibreTranslated failed to return a response, aborting operation.");
+                    return;
+                }
+            }
+
+            if (responseJSON == null) {
+                return;
+            }
+
+            if (responseJSON.detectedLanguage.language != lang_identifier[configuration.Language])
+            {
+                lastSentMessage = $"{senderName}: LibreTranslate({responseJSON.translatedText})";
+                Plugin.Chat.Print(new XivChatEntry { Message = lastSentMessage, Type = XivChatType.SystemMessage });
+                PluginLog.Information($"{senderName}: {responseJSON.translatedText} {responseJSON.detectedLanguage.language}");
+            }
+
+
+        }
+
+        public async Task<LibreTranslateResponse> MakeLibreTranslateRequest(string message, string target = "")
+        {
+            string target_lang = target == "" ? lang_identifier[configuration.Language]: target;
             var values = new Dictionary<string, string>
             {
               { "q", message },
               { "source", "auto" },
-              { "target", lang_identifier[configuration.Language] }
+              { "target", target_lang }
             };
 
             // Grab Translation from selected LibreTranslate Source
             var content = new FormUrlEncodedContent(values);
             var response = await Client.PostAsync(translation_url[0], content);
 
-            // Still use LibreTranslate to identify 'for free'
-            LibreTranslateResponse responseJSON = await response.Content.ReadFromJsonAsync<LibreTranslateResponse>();
-            if (responseJSON.detectedLanguage.language == lang_identifier[configuration.Language])
-                return;
-
-            // DeepL Object
-            var DeepLTranslator = new DeepL.Translator(configuration.Api_Key);
-
-            string language_identity = lang_identifier[configuration.Language].ToUpper();
-
-            if (language_identity == "EN")
-                language_identity = "EN-US";
-
-            var translatedText = await DeepLTranslator.TranslateTextAsync(
-             message,
-             null,
-             language_identity);
-
-
-            lastSentMessage = $"{senderName}: DeepL({translatedText})";
-            Plugin.Chat.Print(new XivChatEntry { Message = lastSentMessage, Type = XivChatType.SystemMessage });
-            PluginLog.Information($"{senderName}: {translatedText}");
-            Client.DefaultRequestHeaders.Authorization = null;
-        }
-
-        private async Task LibreTranslate(string message, string senderName, string senderWorld, XivChatType chatType)
-        {
-            var values = new Dictionary<string, string>
-            {
-              { "q", message },
-              { "source", "auto" },
-              { "target", lang_identifier[configuration.Language] }
-            };
-
-            // Grab Translation from selected LibreTranslate Source
-            var content = new FormUrlEncodedContent(values);
-            var response = await Client.PostAsync(translation_url[configuration.Service], content);
-
             LibreTranslateResponse responseJSON = await response.Content.ReadFromJsonAsync<LibreTranslateResponse>();
 
-            if (responseJSON.detectedLanguage.language != lang_identifier[configuration.Language])
-            {
-                lastSentMessage = $"{senderName}: LibreTranslate({responseJSON.translatedText})";
-                Plugin.Chat.Print(new XivChatEntry { Message = lastSentMessage, Type = XivChatType.SystemMessage });
-                PluginLog.Information($"{senderName}: {responseJSON.translatedText} {responseJSON.detectedLanguage.language} {chatType.ToString()}");
-            }
+            return responseJSON;
         }
 
         public async Task Start()
@@ -137,7 +183,6 @@ namespace WhatchaSay
 
         public void Dispose()
         {
-            PluginLog.Verbose("Discord DISPOSE!!");
             this.MessageQueue?.Stop();
         }
     }
