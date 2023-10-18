@@ -17,7 +17,7 @@ public class ConfigWindow : Window, IDisposable
 
     public ConfigWindow(Plugin plugin) : base(
         "WhatchaSay Configuration",
-        ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize)
+        ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar)
     {
         this.Size = new Vector2(400, 500);
         this.SizeCondition = ImGuiCond.Always;
