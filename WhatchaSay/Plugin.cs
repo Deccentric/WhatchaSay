@@ -1,26 +1,14 @@
 using Dalamud.Game.Command;
 using Dalamud.IoC;
-using Dalamud.Game.Gui;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Game.ClientState;
 using WhatchaSay.Model;
 using Dalamud.Plugin;
-using System.IO;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using WhatchaSay.Windows;
-using System.Drawing;
 using System.Threading.Tasks;
-using Lumina.Excel.GeneratedSheets;
-using XivCommon;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Dalamud.Logging;
-using System.Reflection;
-using GSF.Communication;
-using System.Collections.Generic;
 
 namespace WhatchaSay
 {

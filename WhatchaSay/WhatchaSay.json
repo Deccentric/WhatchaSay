@@ -1,12 +1,12 @@
 {
-  "Author": "Deccentric",
-  "Name": "WhatchaSay",
-  "Punchline": "An auto translator for chat.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "whatchaSay",
-  "ApplicableVersion": "any",
-  "Tags": [
-    "chat",
-    "translate"
-  ]
+    "Author": "Deccentric",
+    "Name": "WhatchaSay",
+    "Punchline": "Defeat the true end game, langauge barriers.",
+    "Description": "Configure auto-chat translation with /whatchasay and translate with /translate.",
+    "InternalName": "whatchaSay",
+    "ApplicableVersion": "any",
+    "Tags": [
+        "chat",
+        "translate"
+    ]
 }

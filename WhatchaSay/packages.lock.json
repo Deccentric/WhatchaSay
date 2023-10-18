@@ -18,42 +18,6 @@
           "System.Text.Json": "5.0.2"
         }
       },
-      "GSF.Communication": {
-        "type": "Direct",
-        "requested": "[2.4.28, )",
-        "resolved": "2.4.28",
-        "contentHash": "xaaRNIVkWzlmdfQ1DAODhRK1dcZpFe6iBgEimlPHy4HH7RLq8D66HxmVKLKb57jn5Qt+xzVoWQ6FFrCDOowjVw==",
-        "dependencies": {
-          "GSF.Core": "2.4.28"
-        }
-      },
-      "XivCommon": {
-        "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "avaBp3FmSCi/PiQhntCeBDYOHejdyTWmFtz4pRBVQQ8vHkmRx+YTk1la9dkYBMlXxRXKckEdH1iI1Fu61JlE7w=="
-      },
-      "Antlr": {
-        "type": "Transitive",
-        "resolved": "3.5.0.2",
-        "contentHash": "CSfrVuDVMx3OrQhT84zed+tOdM1clljyRLWWlQM22fJsmG836RVDGQlE6tzysXh8X8p9UjkHbLr6OqEIVhtdEA=="
-      },
-      "ExpressionEvaluator": {
-        "type": "Transitive",
-        "resolved": "2.0.4",
-        "contentHash": "w8RqBrK5YkjgXmLE0M6PKcULee3/fVaz+aIt1lOEhyyb0PYIqGvbyovmZ9Mp5WCFV6EnUjxxkoEc4MS6wlyy5Q==",
-        "dependencies": {
-          "Antlr": "3.5.0.2"
-        }
-      },
-      "GSF.Core": {
-        "type": "Transitive",
-        "resolved": "2.4.28",
-        "contentHash": "K0hUUmf+uIPQPf63ULss+6/7Arwxz0SJAb77146gcOgbPV220R2Cix3UPX/FNIedXpc9Y6LAxJfCCbv+bcGWSw==",
-        "dependencies": {
-          "ExpressionEvaluator": "2.0.4"
-        }
-      },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
         "resolved": "5.0.0",

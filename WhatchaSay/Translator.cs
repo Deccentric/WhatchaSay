@@ -1,23 +1,12 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using Dalamud.Game.Text;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
-using GSF.Communication;
-using Lumina.Excel.GeneratedSheets;
 using WhatchaSay.Model;
-using XivCommon.Functions;
-using DeepL;
-using GSF;
-using FFXIVClientStructs.Havok;
 
 namespace WhatchaSay
 {

@@ -1,22 +1,13 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.IoC;
 using Dalamud.Logging;
-using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using GSF.Communication;
 using WhatchaSay.Model;
-using System.Windows;
 
 namespace WhatchaSay
 {
