@@ -16,6 +16,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using GSF.Communication;
 using WhatchaSay.Model;
+using System.Windows;
 
 namespace WhatchaSay
 {
@@ -29,6 +30,8 @@ namespace WhatchaSay
         private readonly Thread runnerThread;
 
         private readonly ConcurrentQueue<QueuedXivEvent> eventQueue = new ConcurrentQueue<QueuedXivEvent>();
+
+        private int failed_results = 0;
 
         public TranslatorMessageQueue(Plugin plugin)
         {
@@ -67,15 +70,50 @@ namespace WhatchaSay
                         {
                             var playerPayload = chatEvent.Sender.Payloads.SingleOrDefault(x => x is PlayerPayload) as PlayerPayload;
                             if (chatEvent.ChatType is XivChatType.StandardEmote) playerPayload = chatEvent.Message.Payloads.FirstOrDefault(x => x is PlayerPayload) as PlayerPayload;
+
+                            if (chatEvent.Message.TextValue == null || chatEvent.Message.TextValue == "")
+                                return;
+
+                            if (playerPayload == default(PlayerPayload) && this.plugin.Configuration.Translate_Self == true) await this.plugin.ChatTranslate.Translate(chatEvent.Message.TextValue, state.LocalPlayer.Name.TextValue);
+                            else if (playerPayload != default(PlayerPayload)) await this.plugin.ChatTranslate.Translate(chatEvent.Message.TextValue, playerPayload.PlayerName);
                             
-                            if (playerPayload == default(PlayerPayload)) await this.plugin.ChatTranslate.Translate(chatEvent.Message.TextValue, state.LocalPlayer.Name.TextValue);
-                            else await this.plugin.ChatTranslate.Translate(chatEvent.Message.TextValue, playerPayload.PlayerName);
+                            failed_results = 0;
+                        }
+
+                        else if (resultEvent is StringTranslateItem translateEvent)
+                        {
+                            //PluginLog.Information($"New translation request for: {translateEvent.Message} Some debug text");
+                            string TranslatedString = await this.plugin.ChatTranslate.Translate(translateEvent);
+                            plugin.TranslationWindow.IsWaiting = false;
+
+                            if (TranslatedString == "" || TranslatedString == null)
+                            {
+                                TranslatedString = "Error translating text.";
+                            }
+
+                            plugin.TranslationWindow.TextOutput = Encoding.UTF8.GetBytes(TranslatedString);
+                            if (TranslatedString != "Error translating text.")
+                            {
+                                plugin.TranslationWindow.CopyResult(TranslatedString);
+                                Plugin.Chat.Print(new XivChatEntry { Message = "Copied translation to clipboard.", Type = XivChatType.SystemMessage });
+                            }
+                            failed_results = 0;
                         }
 
                     }
                     catch (Exception e)
                     {
                         PluginLog.Error(e, "Failed to process the event.");
+                        if (plugin.TranslationWindow.IsWaiting == true)
+                          plugin.TranslationWindow.IsWaiting = false;
+
+                        failed_results++;
+
+                        if (failed_results > 5)
+                        {
+                            plugin.Configuration.Enabled = false;
+                            Plugin.Chat.Print(new XivChatEntry { Message = "Failed to get 5 consecutive translations. Please report this error.", Type = XivChatType.SystemMessage });
+                        }
                     }
                 }
 

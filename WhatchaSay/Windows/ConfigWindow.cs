@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
+using DeepL.Model;
 using ImGuiNET;
 
 namespace WhatchaSay.Windows;
@@ -11,14 +13,17 @@ public class ConfigWindow : Window, IDisposable
 {
     private Configuration Configuration;
 
+    private Plugin ConfigPlugin;
+
     public ConfigWindow(Plugin plugin) : base(
         "WhatchaSay Configuration",
-        ImGuiWindowFlags.NoCollapse)
+        ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize)
     {
-        this.Size = new Vector2(400, 400);
+        this.Size = new Vector2(400, 500);
         this.SizeCondition = ImGuiCond.Always;
 
         this.Configuration = plugin.Configuration;
+        this.ConfigPlugin = plugin;
     }
 
     public void Dispose() { }
@@ -27,6 +32,7 @@ public class ConfigWindow : Window, IDisposable
     {
         // can't ref a property, so use a local copy
         var enabledValue = this.Configuration.Enabled;
+        var selfValue = this.Configuration.Translate_Self;
         var languageValue = this.Configuration.Language;
         var serviceValue = this.Configuration.Service;
         byte[] apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
@@ -58,44 +64,31 @@ public class ConfigWindow : Window, IDisposable
         var chatTypeCrossLinkShell7 = this.Configuration.ChatTypeEnabled[XivChatType.CrossLinkShell7];
         var chatTypeCrossLinkShell8 = this.Configuration.ChatTypeEnabled[XivChatType.CrossLinkShell8];
 
+        ImGui.Columns(1);
+
         if (ImGui.Checkbox("Enabled", ref enabledValue))
         {
             this.Configuration.Enabled = enabledValue;
             this.Configuration.Save();
+
+            if (enabledValue == true)
+            {
+                ConfigPlugin.ChatTranslate.failed_deepL = 0;
+                ConfigPlugin.ChatTranslate.failed_libre = 0;
+            }
         }
 
-        ImGui.Text("Target Language");
-        if (ImGui.RadioButton("English", ref languageValue, 0))
+        if (ImGui.Checkbox("Translate Self", ref selfValue))
         {
-            this.Configuration.Language = 0;
-            // can save immediately on change, if you don't want to provide a "Save and Close" button
+            this.Configuration.Translate_Self = selfValue;
             this.Configuration.Save();
         }
 
-        if (ImGui.RadioButton("French", ref languageValue, 1))
+        ImGui.Text("This setting is your desired INCOMING language.");
+        ImGui.SetNextItemWidth(150);
+        if (ImGui.Combo("Target Language", ref languageValue, Plugin.LanguageDropdown))
         {
-            this.Configuration.Language = 1;
-            // can save immediately on change, if you don't want to provide a "Save and Close" button
-            this.Configuration.Save();
-        }
-
-        if (ImGui.RadioButton("German", ref languageValue, 2))
-        {
-            this.Configuration.Language = 2;
-            // can save immediately on change, if you don't want to provide a "Save and Close" button
-            this.Configuration.Save();
-        }
-
-        if (ImGui.RadioButton("日本語", ref languageValue, 3))
-        {
-            this.Configuration.Language = 3;
-            // can save immediately on change, if you don't want to provide a "Save and Close" button
-            this.Configuration.Save();
-        }
-
-        if (ImGui.RadioButton("Spanish", ref languageValue, 4))
-        {
-            this.Configuration.Language = 4;
+            this.Configuration.Language = languageValue;
             // can save immediately on change, if you don't want to provide a "Save and Close" button
             this.Configuration.Save();
         }
@@ -108,6 +101,7 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.Save();
         }
 
+        ImGui.SameLine();
         if (ImGui.RadioButton("DeepL", ref serviceValue, 1))
         {
             this.Configuration.Service = 1;
@@ -115,6 +109,7 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.Save();
         }
 
+        ImGui.SetNextItemWidth(200);
         if (ImGui.InputText("DeepL API Key", apiValue, 40))
         {
             this.Configuration.Api_Key = Encoding.UTF8.GetString(apiValue);
@@ -123,6 +118,7 @@ public class ConfigWindow : Window, IDisposable
         }
 
         ImGui.Text("Active Channels");
+        ImGui.Columns(3);
         if (ImGui.Checkbox("Say", ref chatTypeSay))
         {
             this.Configuration.ChatTypeEnabled[XivChatType.Say] = chatTypeSay;
@@ -172,6 +168,20 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.Save();
         }
 
+        if (ImGui.Checkbox("Novice Network", ref chatTypeNoviceNetwork))
+        {
+            this.Configuration.ChatTypeEnabled[XivChatType.NoviceNetwork] = chatTypeNoviceNetwork;
+            this.Configuration.Save();
+        }
+
+        if (ImGui.Checkbox("Custom Emote", ref chatTypeCustomEmote))
+        {
+            this.Configuration.ChatTypeEnabled[XivChatType.CustomEmote] = chatTypeCustomEmote;
+            this.Configuration.Save();
+        }
+
+        ImGui.NextColumn();
+
         if (ImGui.Checkbox("LS1", ref chatTypeLs1))
         {
             this.Configuration.ChatTypeEnabled[XivChatType.Ls1] = chatTypeLs1;
@@ -213,17 +223,7 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.Save();
         }
 
-        if (ImGui.Checkbox("Novice Network", ref chatTypeNoviceNetwork))
-        {
-            this.Configuration.ChatTypeEnabled[XivChatType.NoviceNetwork] = chatTypeNoviceNetwork;
-            this.Configuration.Save();
-        }
-
-        if (ImGui.Checkbox("Custom Emote", ref chatTypeCustomEmote))
-        {
-            this.Configuration.ChatTypeEnabled[XivChatType.CustomEmote] = chatTypeCustomEmote;
-            this.Configuration.Save();
-        }
+        ImGui.NextColumn();
 
         if (ImGui.Checkbox("Cross LS1", ref chatTypeCrossLinkShell1))
         {
@@ -265,5 +265,6 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.ChatTypeEnabled[XivChatType.CrossLinkShell8] = chatTypeCrossLinkShell8;
             this.Configuration.Save();
         }
+        ImGui.Columns(1);
     }
 }

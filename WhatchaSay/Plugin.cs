@@ -19,6 +19,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Dalamud.Logging;
 using System.Reflection;
+using GSF.Communication;
+using System.Collections.Generic;
 
 namespace WhatchaSay
 {
@@ -41,6 +43,7 @@ namespace WhatchaSay
         [PluginService] public static IClientState State { get; private set; }
 
         private ConfigWindow ConfigWindow { get; init; }
+        public TranslateWindow TranslationWindow { get; init; }
 
         private static readonly XivChatType[] AllowedChatTypes = new[]
         {
@@ -73,6 +76,27 @@ namespace WhatchaSay
             XivChatType.CrossLinkShell8
         };
 
+        public static string[] AvailableLangauges =
+        {
+            "English",
+            "French",
+            "Deutsch",
+            "日本語",
+            "Spanish"
+
+        };
+
+        public static string[] LanguageIdentifiers =
+        {
+            "en",
+            "fr",
+            "de",
+            "ja",
+            "es"
+        };
+
+        public static string LanguageDropdown = string.Join("\0", AvailableLangauges);
+
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] ICommandManager commandManager)
@@ -85,8 +109,10 @@ namespace WhatchaSay
 
             this.ChatTranslate = new Translator(this);
             ConfigWindow = new ConfigWindow(this);
+            TranslationWindow = new TranslateWindow(this);
             
             WindowSystem.AddWindow(ConfigWindow);
+            WindowSystem.AddWindow(TranslationWindow);
 
             Task.Run(async () =>
             {
@@ -133,6 +159,7 @@ namespace WhatchaSay
             this.WindowSystem.RemoveAllWindows();
 
             ConfigWindow.Dispose();
+            TranslationWindow.Dispose();
 
             this.ChatTranslate.Dispose();
             
@@ -148,7 +175,7 @@ namespace WhatchaSay
 
         private void OnTranslateCommand(string command, string args)
         {
-            
+            TranslationWindow.IsOpen = true;
         }
 
         private void DrawUI()
@@ -160,5 +187,6 @@ namespace WhatchaSay
         {
             ConfigWindow.IsOpen = true;
         }
+
     }
 }

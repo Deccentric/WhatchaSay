@@ -16,6 +16,7 @@ namespace WhatchaSay
         public int Version { get; set; } = 0;
 
         public bool Enabled { get; set; } = false;
+        public bool Translate_Self { get; set; } = false;
         public int Language { get; set; } = 0;
         public int Service { get; set; } = 0;
         public string Api_Key { get; set; } = "";
@@ -50,9 +51,6 @@ namespace WhatchaSay
             {XivChatType.CrossLinkShell7, false },
             {XivChatType.CrossLinkShell8, false }
         };
-
-        public string[] LibreTranslateMirrors = new[] { "test" };
-
 
         // the below exist just to make saving less cumbersome
         [NonSerialized]
