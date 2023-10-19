@@ -35,7 +35,9 @@ public class ConfigWindow : Window, IDisposable
         var selfValue = this.Configuration.Translate_Self;
         var languageValue = this.Configuration.Language;
         var serviceValue = this.Configuration.Service;
-        byte[] apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
+
+        byte[] apiValue = new byte[40];
+        apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
 
         var chatTypeSay = this.Configuration.ChatTypeEnabled[XivChatType.Say];
         var chatTypeShout = this.Configuration.ChatTypeEnabled[XivChatType.Shout];

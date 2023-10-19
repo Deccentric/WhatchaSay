@@ -1,9 +1,6 @@
 using Dalamud.Configuration;
-using Dalamud.Game.ClientState.JobGauge.Enums;
 using Dalamud.Game.Text;
 using Dalamud.Plugin;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 
