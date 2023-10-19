@@ -37,7 +37,9 @@ public class ConfigWindow : Window, IDisposable
         var serviceValue = this.Configuration.Service;
 
         byte[] apiValue = new byte[40];
-        apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
+
+        if (this.Configuration.Api_Key != "" && this.Configuration.Api_Key != "")
+          apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
 
         var chatTypeSay = this.Configuration.ChatTypeEnabled[XivChatType.Say];
         var chatTypeShout = this.Configuration.ChatTypeEnabled[XivChatType.Shout];
@@ -114,7 +116,7 @@ public class ConfigWindow : Window, IDisposable
         ImGui.SetNextItemWidth(200);
         if (ImGui.InputText("DeepL API Key", apiValue, 40))
         {
-            this.Configuration.Api_Key = Encoding.UTF8.GetString(apiValue);
+            this.Configuration.Api_Key = Encoding.UTF8.GetString(apiValue).TrimEnd(new char[] { (char)0 });
 
             this.Configuration.Save();
         }
