@@ -14,10 +14,11 @@ An automatic translation plugin for Dalamud with support for multiple translatio
       * It's possible a node will be setup specifically for this project.
     * [DeepL] Supports Free Translation of 500,000 characters/month with signup.
     * Planned Support for [Microsoft Translator][Microsoft-Translator] Supports Free Translation of 2,000,000 characters/month with signup.
-* Planned Translation Command to translate messages before you send them.
+* Translation Command to translate messages before you send them.
 * Langauge support for all officially supported languages by FFXIV.
 * Ability to select which channels of chat will be automatically translated.
   * Does not support System, Battle, or Event channels.
+* Planned support for all languages supported by the language engine.
   
 [LibreTranslate]: https://github.com/LibreTranslate/LibreTranslate
 [DeepL]: https://deepl.com/translator
