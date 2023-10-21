@@ -98,7 +98,7 @@ Step 5: Copy your API Key
 ![image](https://github.com/Deccentric/WhatchaSay/blob/master/Images/deepl5.jpg?raw=true)
 
 ### Contributing to this Plugin
-If any bugs related strictly to the plugin are found, please open an issue on the project. Please do not create an issue related to an inaccurate translation as that is related to the selected translation engine. If you'd like to contribute code to this repository, please fork the master branch and create a pull request when completed.
+If any bugs related strictly to the plugin are found, please open an issue on the project. Please do not create an issue related to an inaccurate translation as that is related to the selected translation engine. If you'd like to contribute code to this repository, please create a new branch and create a pull request when completed. I will review as soon as I have time.
 
 ### Credit
 During the development of this project I used [Dalamud.DiscordBridge][DalamudLink] as an example for how to handle messages in a concurrent way.
