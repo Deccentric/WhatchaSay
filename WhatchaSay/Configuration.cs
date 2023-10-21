@@ -17,6 +17,7 @@ namespace WhatchaSay
         public int Language { get; set; } = 0;
         public int Service { get; set; } = 0;
         public string Api_Key { get; set; } = "";
+        public int LibreTranslateMirror { get; set; } = 0;
         public Dictionary<XivChatType, bool> ChatTypeEnabled { get; set; } = new Dictionary<XivChatType, bool>()
         {
             {XivChatType.Say, false },
@@ -48,6 +49,8 @@ namespace WhatchaSay
             {XivChatType.CrossLinkShell7, false },
             {XivChatType.CrossLinkShell8, false }
         };
+
+        public string CustomLibre { get; set; } = "";
 
         // the below exist just to make saving less cumbersome
         [NonSerialized]

@@ -83,7 +83,19 @@ namespace WhatchaSay
             "es"
         };
 
+        public static string[] LibreTranslateMirrors =
+        {
+            "https://translate.argosopentech.com/translate",
+            "https://translate.terraprint.co/translate",
+            "https://trans.zillyhuhn.com/translate",
+            "https://libretranslate.eownerdead.dedyn.io/translate",
+            "Custom"
+        };
+
+        public static string DeepLURL = "https://api-free.deepl.com/v2/translate";
+
         public static string LanguageDropdown = string.Join("\0", AvailableLangauges);
+        public static string LibreTranslateDropdown = string.Join("\0", LibreTranslateMirrors);
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
