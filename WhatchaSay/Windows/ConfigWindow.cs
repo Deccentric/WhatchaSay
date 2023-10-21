@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using DeepL.Model;
 using ImGuiNET;
 
@@ -15,15 +17,24 @@ public class ConfigWindow : Window, IDisposable
 
     private Plugin ConfigPlugin;
 
+    byte[] apiValue = new byte[40];
+    byte[] customLibreHost = new byte[256];
+
     public ConfigWindow(Plugin plugin) : base(
         "WhatchaSay Configuration",
         ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar)
     {
-        this.Size = new Vector2(400, 500);
+        this.Size = new Vector2(400, 550);
         this.SizeCondition = ImGuiCond.Always;
 
         this.Configuration = plugin.Configuration;
         this.ConfigPlugin = plugin;
+
+        if (this.Configuration.Api_Key != "")
+            apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
+
+        if (this.Configuration.CustomLibre != "")
+            customLibreHost = Encoding.UTF8.GetBytes(this.Configuration.CustomLibre);
     }
 
     public void Dispose() { }
@@ -34,12 +45,8 @@ public class ConfigWindow : Window, IDisposable
         var enabledValue = this.Configuration.Enabled;
         var selfValue = this.Configuration.Translate_Self;
         var languageValue = this.Configuration.Language;
+        var mirrorValue = this.Configuration.LibreTranslateMirror;
         var serviceValue = this.Configuration.Service;
-
-        byte[] apiValue = new byte[40];
-
-        if (this.Configuration.Api_Key != "" && this.Configuration.Api_Key != "")
-          apiValue = Encoding.UTF8.GetBytes(this.Configuration.Api_Key);
 
         var chatTypeSay = this.Configuration.ChatTypeEnabled[XivChatType.Say];
         var chatTypeShout = this.Configuration.ChatTypeEnabled[XivChatType.Shout];
@@ -113,12 +120,36 @@ public class ConfigWindow : Window, IDisposable
             this.Configuration.Save();
         }
 
-        ImGui.SetNextItemWidth(200);
-        if (ImGui.InputText("DeepL API Key", apiValue, 40))
+        if (serviceValue == 1)
         {
-            this.Configuration.Api_Key = Encoding.UTF8.GetString(apiValue).TrimEnd(new char[] { (char)0 });
+            ImGui.SetNextItemWidth(200);
+            if (ImGui.InputText("DeepL API Key", apiValue, 50))
+            {
+                Regex reg = new Regex("[^a-zA-Z0-9:/\\.\\-\\+]");
+                this.Configuration.Api_Key = reg.Replace(Encoding.UTF8.GetString(apiValue), string.Empty);
 
+                this.Configuration.Save();
+            }
+        }
+        
+        ImGui.SetNextItemWidth(200);
+        if (ImGui.Combo("LibreTranslate Host", ref mirrorValue, Plugin.LibreTranslateDropdown))
+        {
+            this.Configuration.LibreTranslateMirror = mirrorValue;
+            // can save immediately on change, if you don't want to provide a "Save and Close" button
             this.Configuration.Save();
+        }
+
+        if (mirrorValue == 4)
+        {
+            ImGui.SetNextItemWidth(200);
+            if (ImGui.InputText("Custom LibreTranslate Host", customLibreHost, 256))
+            {
+                Regex reg = new Regex("[^a-zA-Z0-9:/\\.\\-\\+]");
+                this.Configuration.CustomLibre = reg.Replace(Encoding.UTF8.GetString(customLibreHost), string.Empty);
+
+                this.Configuration.Save();
+            }
         }
 
         ImGui.Text("Active Channels");
@@ -203,7 +234,7 @@ public class ConfigWindow : Window, IDisposable
         }
         if (ImGui.Checkbox("LS4", ref chatTypeLs4))
         {
-            this.Configuration.ChatTypeEnabled[XivChatType.Ls4] = chatTypeLs1;
+            this.Configuration.ChatTypeEnabled[XivChatType.Ls4] = chatTypeLs4;
             this.Configuration.Save();
         }
         if (ImGui.Checkbox("LS5", ref chatTypeLs1))

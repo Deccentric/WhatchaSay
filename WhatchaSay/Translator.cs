@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dalamud.Game.Text;
 using Dalamud.Logging;
@@ -15,12 +16,6 @@ namespace WhatchaSay
 
         private readonly Plugin plugin;
         private string SendMessage;
-
-        private string[] translation_url = new[]
-        {
-            "https://translate.argosopentech.com/translate",
-            "https://api-free.deepl.com/v2/translate"
-        };
 
         public readonly TranslatorMessageQueue MessageQueue;
 
@@ -108,6 +103,8 @@ namespace WhatchaSay
 
             failed_libre = 0;
 
+            //PluginLog.Information($"Contacting DeepL with API Key: {configuration.Api_Key}!!!");
+
             if (responseJSON == null || responseJSON.detectedLanguage.language == TranslatePkt.Target)
                 return TranslatePkt.Message;
 
@@ -116,6 +113,7 @@ namespace WhatchaSay
             try
             {
                 var DeepLTranslator = new DeepL.Translator(configuration.Api_Key);
+
 
                 string language_identity = TranslatePkt.Target.ToUpper();
 
@@ -278,8 +276,11 @@ namespace WhatchaSay
 
             // Grab Translation from selected LibreTranslate Source
             var content = new FormUrlEncodedContent(values);
-            var response = await Client.PostAsync(translation_url[0], content);
 
+            var libreTranslateLink = configuration.LibreTranslateMirror == 4 ? configuration.CustomLibre : Plugin.LibreTranslateMirrors[configuration.LibreTranslateMirror];
+            var response = await Client.PostAsync(libreTranslateLink, content);
+
+            //PluginLog.Information($"Requesting information from {libreTranslateLink}.");
             LibreTranslateResponse responseJSON = await response.Content.ReadFromJsonAsync<LibreTranslateResponse>();
 
             //PluginLog.Information($"Response JSON: {responseJSON.translatedText}");
