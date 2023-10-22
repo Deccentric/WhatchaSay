@@ -40,8 +40,8 @@ This plugin requires Dalamud in order to work.
 [Dalamud]: https://github.com/goatcorp/Dalamud
 [XIVLauncher]: https://goatcorp.github.io/
 
-### Building
-
+### Building [Optional]
+This step if only if you'd like to modify or build the code yourself. Skip to Activating in-game if you just want to install.
 1. Open up `WhatchaSay.sln` in your C# editor of choice (likely [Visual Studio 2022](https://visualstudio.microsoft.com) or [JetBrains Rider](https://www.jetbrains.com/rider/)).
 2. Build the solution. By default, this will build a `Debug` build, but you can switch to `Release` in your IDE.
 3. The resulting plugin can be found at `WhatchaSay/bin/x64/Debug/WhatchaSay.dll` (or `Release` if appropriate.)
