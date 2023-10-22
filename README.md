@@ -77,6 +77,8 @@ Using `/translate` will bring up a basic translation window.
 Once you click `Translate` whatever in the `Text to Translate`` will be translated and copied to your clipboard up to 256 characters.
 
 ### Getting a DeepL API Key
+This is only required if you'd like to use the DeepL API option.
+
 Step 1: Start Creating Your Account
 
 ![image](https://github.com/Deccentric/WhatchaSay/blob/master/Images/deepl1.jpg?raw=true)
