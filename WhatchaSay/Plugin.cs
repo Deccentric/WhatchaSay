@@ -64,23 +64,74 @@ namespace WhatchaSay
             XivChatType.CrossLinkShell8
         };
 
+        // TODO Convert all of these
         public static string[] AvailableLangauges =
         {
             "English",
-            "French",
+            "Arabic",
+            "Bulgarian",
+            "Czech",
+            "Danish",
             "Deutsch",
-            "日本語",
-            "Spanish"
+            "Greek",
+            "Español",
+            "Estonian",
+            "Finnish",
+            "Français",
+            "Hungarian",
+            "Indonesian",
+            "Italiano",
+            "日本語 - Japanese",
+            "Korean",
+            "Lithuanian",
+            "Latvian",
+            "Norwegian",
+            "Dutch",
+            "Polish",
+            "Portuguese",
+            "Romanian",
+            "Russian",
+            "Slovak",
+            "SLovenian",
+            "Swedish",
+            "Turkish",
+            "Ukranian",
+            "简体字 - Simplified Chinese"
 
         };
 
         public static string[] LanguageIdentifiers =
         {
             "en",
-            "fr",
+            "ar",
+            "bg",
+            "cs",
+            "da",
             "de",
+            "el",
+            "es",
+            "et",
+            "fi",
+            "fr",
+            "hu",
+            "id",
+            "it",
             "ja",
-            "es"
+            "ko",
+            "lt",
+            "lv",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "ro",
+            "ru",
+            "sk",
+            "sl",
+            "sv",
+            "tr",
+            "uk",
+            "zh"
         };
 
         public static string[] LibreTranslateMirrors =
