@@ -180,14 +180,28 @@ namespace WhatchaSay
                 if (language_identity == "EN")
                     language_identity = "EN-US";
 
+                else if (language_identity == "PT")
+                    language_identity = "PT-BR";
+
                 var translatedText = await DeepLTranslator.TranslateTextAsync(
                  message,
                  null,
                  language_identity);
 
-                SendMessage = $"{senderName}: DeepL({translatedText})";
-                Plugin.Chat.Print(new XivChatEntry { Message = SendMessage, Type = XivChatType.SystemMessage });
-                //PluginLog.Information($"{senderName}: DeepL({translatedText})");
+                string detected_language = translatedText.DetectedSourceLanguageCode.ToLower();
+
+                if (detected_language == "en-gb" || detected_language == "en-us")
+                    detected_language = "en";
+
+                if (detected_language == "pt-br" || detected_language == "pt-pt")
+                    detected_language = "pt";
+
+                if (detected_language != Plugin.LanguageIdentifiers[configuration.Language])
+                {
+                    SendMessage = $"{senderName}: DeepL({translatedText.Text})";
+                    Plugin.Chat.Print(new XivChatEntry { Message = SendMessage, Type = XivChatType.SystemMessage });
+                }
+                
                 failed_deepL = 0;
             } catch
             {
