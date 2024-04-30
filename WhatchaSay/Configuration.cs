@@ -13,6 +13,7 @@ namespace WhatchaSay
         public int Version { get; set; } = 0;
 
         public bool Enabled { get; set; } = false;
+        public bool Data_Saver { get; set; } = true;
         public bool Translate_Self { get; set; } = false;
         public int Language { get; set; } = 0;
         public int Service { get; set; } = 0;

@@ -141,27 +141,33 @@ namespace WhatchaSay
         {
             LibreTranslateResponse responseJSON;
 
-            // Grab Translation from selected LibreTranslate to determine Source
-            try
+            // Only Run LibreTranslate Check in the Case Data Saver is turned on [Default]
+            if (configuration.Data_Saver)
             {
-                responseJSON = await MakeLibreTranslateRequest(message);
-            } catch (Exception ex)
-            {
-                PluginLog.Error(ex, "There was an error getting a response from LibreTranslate. Trying one more time.");
+                // Grab Translation from selected LibreTranslate to determine Source
                 try
                 {
-                    responseJSON = await MakeLibreTranslateRequest(message, senderName);
-                } catch (Exception nested_ex)
-                {
-                    PluginLog.Error(nested_ex, "LibreTranslated failed to return a response, aborting operation.");
-                    failed_libre++;
-                    return;
+                    responseJSON = await MakeLibreTranslateRequest(message);
                 }
-            }
-            failed_libre = 0;
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, "There was an error getting a response from LibreTranslate. Trying one more time.");
+                    try
+                    {
+                        responseJSON = await MakeLibreTranslateRequest(message, senderName);
+                    }
+                    catch (Exception nested_ex)
+                    {
+                        PluginLog.Error(nested_ex, "LibreTranslated failed to return a response, aborting operation.");
+                        failed_libre++;
+                        return;
+                    }
+                }
+                failed_libre = 0;
 
-            if (responseJSON == null || responseJSON.detectedLanguage.language == Plugin.LanguageIdentifiers[configuration.Language])
-                return;
+                if (responseJSON == null || responseJSON.detectedLanguage.language == Plugin.LanguageIdentifiers[configuration.Language])
+                    return;
+            }
             
 
             // DeepL Object

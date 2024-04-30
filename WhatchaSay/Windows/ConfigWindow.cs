@@ -43,6 +43,7 @@ public class ConfigWindow : Window, IDisposable
     {
         // can't ref a property, so use a local copy
         var enabledValue = this.Configuration.Enabled;
+        var dataSaverValue = this.Configuration.Data_Saver;
         var selfValue = this.Configuration.Translate_Self;
         var languageValue = this.Configuration.Language;
         var mirrorValue = this.Configuration.LibreTranslateMirror;
@@ -88,7 +89,12 @@ public class ConfigWindow : Window, IDisposable
                 ConfigPlugin.ChatTranslate.failed_libre = 0;
             }
         }
-
+        ImGui.SameLine();
+        if (ImGui.Checkbox("Data Saver: Predict Translation Necessary", ref dataSaverValue))
+        {
+            this.Configuration.Data_Saver = dataSaverValue;
+            this.Configuration.Save();
+        }
         if (ImGui.Checkbox("Translate Self", ref selfValue))
         {
             this.Configuration.Translate_Self = selfValue;
